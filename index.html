@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prabal Barahi's Website</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #E8E2D2;
+      --bg-hole: #d3ccb8;
+      --ink: #1C1B1F;
+      --ink-soft: #57544c;
+      --paper: #FBF8F0;
+      --red: #E63946;
+      --blue: #2B6CE0;
+      --yellow: #F2B705;
+      --green: #2E9E5B;
+      --chip: #201F24;
+      --chip-text: #F2EFE6;
+      --chip-text-dim: #9b988f;
+      --radius: 14px;
+      --display: 'Space Grotesk', sans-serif;
+      --body: 'Inter', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    *{box-sizing:border-box; margin:0; padding:0;}
+
+    html{scroll-behavior:smooth;}
+
+    body{
+      background:var(--bg);
+      color:var(--ink);
+      font-family:var(--body);
+      line-height:1.5;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    .board{
+      background-image: radial-gradient(circle, var(--bg-hole) 1.6px, transparent 1.6px);
+      background-size: 26px 26px;
+    }
+
+    a{color:inherit;}
+
+    .wrap{max-width:1040px; margin:0 auto; padding:0 28px;}
+
+    /* ---------- NAV ---------- */
+    header{
+      position:sticky; top:0; z-index:50;
+      background:rgba(232,226,210,0.88);
+      backdrop-filter:blur(6px);
+      border-bottom:1px solid rgba(28,27,31,0.12);
+    }
+    .navbar{display:flex; align-items:center; justify-content:space-between; padding:16px 28px;}
+    .logo{
+      font-family:var(--mono); font-weight:700; font-size:15px;
+      display:flex; align-items:center; gap:8px;
+    }
+    .logo-dot{width:9px;height:9px;border-radius:50%;background:var(--green); box-shadow:0 0 0 3px rgba(46,158,91,0.18); animation:pulse 2.4s ease-in-out infinite;}
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+    nav ul{list-style:none; display:flex; gap:28px;}
+    nav a{
+      font-family:var(--mono); font-size:13px; letter-spacing:.03em;
+      text-decoration:none; color:var(--ink-soft);
+      padding-bottom:2px; border-bottom:2px solid transparent;
+      transition:color .15s, border-color .15s;
+    }
+    nav a:hover, nav a:focus-visible{color:var(--ink); border-color:var(--red);}
+
+    /* ---------- HERO ---------- */
+    .hero{
+      padding:96px 28px 120px;
+      position:relative;
+      overflow:hidden;
+    }
+    .eyebrow{
+      font-family:var(--mono); font-size:12.5px; letter-spacing:.08em;
+      color:var(--ink-soft); text-transform:uppercase;
+      display:inline-flex; align-items:center; gap:10px;
+      background:var(--paper); border:1px solid rgba(28,27,31,.15);
+      padding:6px 12px; border-radius:100px;
+      margin-bottom:28px;
+    }
+    .eyebrow::before{content:''; width:6px;height:6px;border-radius:50%;background:var(--yellow);}
+
+    h1.name{
+      font-family:var(--display); font-weight:700;
+      font-size:clamp(44px, 8vw, 92px);
+      line-height:0.98; letter-spacing:-0.02em;
+      max-width:900px;
+    }
+    h1.name .last{color:var(--blue);}
+
+    .tagline{
+      margin-top:24px;
+      font-family:var(--mono); font-size:15px; color:var(--ink-soft);
+      max-width:520px;
+    }
+    .tagline .accent{color:var(--red); font-weight:700;}
+
+    .hero-wire{
+      margin-top:56px; width:100%; max-width:640px; height:64px;
+      overflow:visible;
+    }
+    .hero-wire path{
+      fill:none; stroke:var(--red); stroke-width:3; stroke-linecap:round;
+      stroke-dasharray:900; stroke-dashoffset:900;
+      animation:draw 1.6s ease forwards .3s;
+    }
+    @keyframes draw{to{stroke-dashoffset:0;}}
+    .hero-wire circle{fill:var(--red); opacity:0; animation:dotfade .3s ease forwards 1.7s;}
+    @keyframes dotfade{to{opacity:1;}}
+
+    /* ---------- SECTION LABELS ---------- */
+    .section{padding:88px 0;}
+    .section-head{margin-bottom:44px;}
+    .tag{
+      font-family:var(--mono); font-size:12px; letter-spacing:.1em;
+      color:var(--ink-soft); text-transform:uppercase;
+      display:block; margin-bottom:10px;
+    }
+    .tag::before{content:'// ';color:var(--blue);}
+    h2{
+      font-family:var(--display); font-weight:600;
+      font-size:clamp(28px, 4vw, 40px); letter-spacing:-.01em;
+    }
+
+    /* ---------- ABOUT ---------- */
+    .about-grid{
+      display:grid; grid-template-columns: 1.1fr 0.9fr; gap:48px; align-items:start;
+    }
+    .about-copy p{font-size:17px; color:#2b2a2d; margin-bottom:16px; max-width:480px;}
+    .about-copy p:last-child{margin-bottom:0;}
+
+    .datasheet{
+      background:var(--chip); color:var(--chip-text);
+      border-radius:var(--radius); padding:26px 26px 22px;
+      position:relative;
+    }
+    .datasheet::before{
+      content:'DATASHEET'; position:absolute; top:14px; right:20px;
+      font-family:var(--mono); font-size:10px; letter-spacing:.12em;
+      color:var(--chip-text-dim);
+    }
+    .datasheet-row{
+      display:flex; justify-content:space-between; gap:16px;
+      padding:12px 0; border-bottom:1px solid rgba(242,239,230,0.12);
+      font-family:var(--mono); font-size:13.5px;
+    }
+    .datasheet-row:last-child{border-bottom:none; padding-bottom:0;}
+    .datasheet-row .k{color:var(--chip-text-dim);}
+    .datasheet-row .v{color:var(--chip-text); text-align:right;}
+
+    /* ---------- PROJECTS ---------- */
+    .chip-grid{
+      display:grid; grid-template-columns:repeat(2,1fr); gap:28px;
+    }
+    .chip-card{
+      background:var(--chip); color:var(--chip-text);
+      border-radius:10px; padding:26px 24px 22px;
+      position:relative; isolation:isolate;
+      transition:transform .2s ease, box-shadow .2s ease;
+    }
+    .chip-card:hover{transform:translateY(-4px); box-shadow:0 14px 30px rgba(28,27,31,.18);}
+    .chip-card .pins{position:absolute; left:18px; right:18px; height:8px; display:flex; justify-content:space-between;}
+    .chip-card .pins span{width:6px;height:8px;background:#8f8b80; border-radius:1px;}
+    .chip-card .pins.top{top:-8px;}
+    .chip-card .pins.bottom{bottom:-8px;}
+    .chip-id{font-family:var(--mono); font-size:11px; color:var(--chip-text-dim); letter-spacing:.08em;}
+    .chip-title{font-family:var(--display); font-weight:600; font-size:20px; margin:10px 0 8px;}
+    .chip-desc{font-size:14px; color:#cfccc1; line-height:1.55; margin-bottom:18px;}
+    .chip-status{display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:11.5px; color:var(--chip-text-dim);}
+
+    .chip-report{
+      display:inline-flex; align-items:center; gap:6px;
+      margin-top:16px; font-family:var(--mono); font-size:12px; font-weight:700;
+      color:var(--chip-text); text-decoration:none;
+      border:1px solid rgba(242,239,230,0.25); border-radius:100px;
+      padding:8px 14px; width:fit-content;
+      transition:border-color .15s ease, background .15s ease;
+    }
+    .chip-report:hover{border-color:var(--red); background:rgba(230,57,70,0.12);}
+    .chip-report svg{width:12px; height:12px;}
+    .led{width:7px;height:7px;border-radius:50%;}
+    .led.active{background:var(--green); box-shadow:0 0 8px var(--green);}
+    .led.wip{background:var(--yellow); box-shadow:0 0 8px var(--yellow);}
+    .led.idea{background:var(--chip-text-dim);}
+
+    .projects-note{
+      margin-top:28px; font-family:var(--mono); font-size:12.5px; color:var(--ink-soft);
+      border-left:2px solid var(--blue); padding-left:12px;
+    }
+
+    /* ---------- RESUME ---------- */
+    .resume-box{
+      background:var(--paper); border:1px solid rgba(28,27,31,.14);
+      border-radius:var(--radius); padding:40px;
+      display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap;
+    }
+    .resume-box .label{font-family:var(--mono); font-size:12px; color:var(--ink-soft); letter-spacing:.06em; margin-bottom:6px;}
+    .resume-box .file{font-family:var(--display); font-weight:600; font-size:22px;}
+    .btn{
+      font-family:var(--mono); font-size:13.5px; font-weight:700;
+      background:var(--ink); color:var(--paper);
+      padding:14px 22px; border-radius:8px; text-decoration:none;
+      display:inline-flex; align-items:center; gap:10px;
+      border:none; cursor:pointer;
+      transition:background .15s ease, transform .15s ease;
+    }
+    .btn:hover{background:var(--blue); transform:translateY(-2px);}
+
+    /* ---------- CONTACT ---------- */
+    .pin-row{display:flex; flex-wrap:wrap; gap:16px;}
+    .pin{
+      display:flex; align-items:center; gap:12px;
+      background:var(--paper); border:1px solid rgba(28,27,31,.14);
+      padding:14px 20px; border-radius:100px;
+      text-decoration:none; color:var(--ink);
+      font-family:var(--mono); font-size:14px;
+      transition:border-color .15s, transform .15s;
+    }
+    .pin:hover{border-color:var(--red); transform:translateY(-2px);}
+    .pin .wire{width:10px;height:10px;border-radius:50%;}
+    .pin.email .wire{background:var(--red);}
+    .pin.github .wire{background:var(--blue);}
+    .pin.linkedin .wire{background:var(--yellow);}
+
+    footer{
+      padding:40px 28px; text-align:center;
+      font-family:var(--mono); font-size:12px; color:var(--ink-soft);
+      border-top:1px solid rgba(28,27,31,.12); margin-top:40px;
+    }
+
+    /* ---------- BACK TO TOP ---------- */
+    .to-top{
+      position:fixed; right:24px; bottom:24px; z-index:60;
+      width:48px; height:48px; border-radius:50%;
+      background:var(--chip); color:var(--chip-text);
+      border:none; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 8px 20px rgba(28,27,31,.25);
+      opacity:0; transform:translateY(12px) scale(.9);
+      pointer-events:none;
+      transition:opacity .25s ease, transform .25s ease, background .15s ease;
+    }
+    .to-top.show{opacity:1; transform:translateY(0) scale(1); pointer-events:auto;}
+    .to-top:hover{background:var(--red);}
+    .to-top svg{width:18px; height:18px;}
+    .to-top .to-top-dot{
+      position:absolute; top:-2px; right:-2px; width:8px; height:8px;
+      border-radius:50%; background:var(--green);
+      box-shadow:0 0 0 2px var(--bg);
+    }
+
+    @media (max-width:760px){
+      .about-grid{grid-template-columns:1fr;}
+      .chip-grid{grid-template-columns:1fr;}
+      nav ul{gap:16px;}
+      .navbar{padding:14px 20px;}
+      .hero{padding:64px 20px 80px;}
+      .resume-box{flex-direction:column; align-items:flex-start;}
+      .to-top{right:16px; bottom:16px; width:44px; height:44px;}
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      html{scroll-behavior:auto;}
+      .hero-wire path, .hero-wire circle, .logo-dot{animation:none !important; stroke-dashoffset:0; opacity:1;}
+      .chip-card, .btn, .pin{transition:none;}
+      .to-top{transition:opacity .01s linear;}
+    }
+  </style>
+</head>
+
+<body class="board">
+  <header>
+    <div class="navbar">
+      <div class="logo"><span class="logo-dot"></span> P.BARAHI</div>
+      <nav>
+        <ul>
+          <li><a href="#about">About</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#resume">Resume</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow">Currently prototyping · Lalitpur, Nepal</span>
+      <h1 class="name">Prabal<br><span class="last">Barahi</span></h1>
+      <p class="tagline">Electrical Engineer by degree, <span class="accent">builder of things</span> by habit — currently wiring my way from circuits into code.</p>
+
+      <svg class="hero-wire" viewBox="0 0 640 64" preserveAspectRatio="none">
+        <path d="M0,32 C120,32 120,8 240,8 S360,56 480,56 S560,32 640,32" />
+        <circle cx="640" cy="32" r="5"/>
+      </svg>
+    </div>
+  </section>
+
+  <main class="wrap">
+    <section class="section" id="about">
+      <div class="section-head">
+        <span class="tag">About</span>
+        <h2>From datasheets to source code</h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-copy">
+          <p>I'm Prabal, an Electrical Engineer who spends as much time thinking about voltage dividers as I do about variables. My training is in circuits and systems, but somewhere along the way I got curious about what happens on the software side of the board — and I haven't stopped since.</p>
+          <p>These days I split my attention between hardware fundamentals and teaching myself to code, picking up programming and software development one small project at a time. This site is where I'll be documenting that process — equal parts engineering notebook and workbench.</p>
+        </div>
+        <div class="datasheet">
+          <div class="datasheet-row"><span class="k">NAME</span><span class="v">Prabal Barahi</span></div>
+          <div class="datasheet-row"><span class="k">DISCIPLINE</span><span class="v">Electrical Engineering</span></div>
+          <div class="datasheet-row"><span class="k">EXPLORING</span><span class="v">Coding &amp; Software Dev</span></div>
+          <div class="datasheet-row"><span class="k">STATUS</span><span class="v">Actively learning</span></div>
+          <div class="datasheet-row"><span class="k">BASED IN</span><span class="v">Lalitpur, Nepal</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="projects">
+      <div class="section-head">
+        <span class="tag">Projects</span>
+        <h2>U1 – U2 · built so far</h2>
+      </div>
+
+      <div class="chip-grid">
+        <div class="chip-card">
+          <div class="pins top"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          <div class="chip-id">U1</div>
+          <div class="chip-title">SNN-Controlled SAPF</div>
+          <div class="chip-desc">Final-year project modeling an isolated micro-hydro + solar microgrid in MATLAB/Simulink, then replacing the classical harmonic-filtering math with a Spiking Neural Network built from scratch in Python. The SNN controller matched the classical baseline, cutting grid harmonic distortion from 12.86% down to 4.84% — under the IEEE 519 limit.</div>
+          <div class="chip-status"><span class="led active"></span> Simulated &amp; validated</div>
+          <a class="chip-report" href="snn-sapf-report.pdf" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+            View Report
+          </a>
+          <div class="pins bottom"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+
+        <div class="chip-card">
+          <div class="pins top"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          <div class="chip-id">U2</div>
+          <div class="chip-title">Illumination &amp; LV Distribution Design</div>
+          <div class="chip-desc">Full lighting and low-voltage distribution design for a building's interior and exterior, built to NEC/IEC standards. Ran lux calculations to place fixtures correctly, then worked out the load schedules and single-line diagrams needed to actually wire the system.</div>
+          <div class="chip-status"><span class="led active"></span> Design complete</div>
+          <a class="chip-report" href="illumination-report.pdf" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+            View Report
+          </a>
+          <div class="pins bottom"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+      </div>
+
+      <p class="projects-note">More projects get added as U3, U4, and onward — this board keeps growing.</p>
+    </section>
+
+    <section class="section" id="resume">
+      <div class="section-head">
+        <span class="tag">Resume</span>
+        <h2>Pull the spec sheet</h2>
+      </div>
+      <div class="resume-box">
+        <div>
+          <div class="label">FILE</div>
+          <div class="file">resume-prabalbarahi.pdf</div>
+        </div>
+        <div class="btn-group">
+          <a class="btn btn-outline" href="resume-prabalbarahi.pdf" target="_blank" rel="noopener">&#128065; View Resume</a>
+          <a class="btn" href="resume-prabalbarahi.pdf" download>&#8595; Download Resume</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="contact">
+      <div class="section-head">
+        <span class="tag">Contact</span>
+        <h2>Wire me up</h2>
+      </div>
+      <div class="pin-row">
+        <a class="pin email" href="mailto:prabalbarahi005@gmail.com"><span class="wire"></span> prabalbarahi005@gmail.com</a>
+        <a class="pin github" href="https://github.com/PrabalBarahi" target="_blank" rel="noopener"><span class="wire"></span> github.com/PrabalBarahi</a>
+        <a class="pin linkedin" href="https://linkedin.com/in/prabalbarahi" target="_blank" rel="noopener"><span class="wire"></span> linkedin.com/in/prabalbarahi</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    Built on a breadboard, soldered into HTML — © <span id="year"></span> Prabal Barahi
+  </footer>
+
+  <button class="to-top" id="toTop" aria-label="Back to top">
+    <span class="to-top-dot"></span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 19V5"/>
+      <path d="M5 12l7-7 7 7"/>
+    </svg>
+  </button>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const toTopBtn = document.getElementById('toTop');
+    window.addEventListener('scroll', () => {
+      toTopBtn.classList.toggle('show', window.scrollY > 480);
+    });
+    toTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+
+</body>
+</html>
