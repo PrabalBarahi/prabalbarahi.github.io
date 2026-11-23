@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Datasheet Q&amp;A Assistant · Prabal Barahi</title>
+  <meta name="description" content="A retrieval-augmented generation (RAG) app that answers questions about electronics datasheets, with page citations. Built with Python, Streamlit and an LLM API.">
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+  :root{
+    --bg:#E8E2D2; --bg-hole:#d3ccb8; --ink:#1C1B1F; --ink-soft:#57544c; --paper:#FBF8F0;
+    --red:#E63946; --blue:#2B6CE0; --yellow:#F2B705; --green:#2E9E5B;
+    --chip:#201F24; --chip-text:#F2EFE6; --chip-text-dim:#9b988f; --radius:14px;
+    --display:'Space Grotesk',sans-serif; --body:'Inter',sans-serif; --mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg); color:var(--ink); font-family:var(--body); line-height:1.55; -webkit-font-smoothing:antialiased;}
+  .board{background-image:radial-gradient(circle,var(--bg-hole) 1.6px,transparent 1.6px); background-size:26px 26px;}
+  a{color:inherit;}
+  .wrap{max-width:900px; margin:0 auto; padding:0 28px;}
+
+  header{position:sticky; top:0; z-index:50; background:rgba(232,226,210,.88); backdrop-filter:blur(6px); border-bottom:1px solid rgba(28,27,31,.12);}
+  .navbar{display:flex; align-items:center; justify-content:space-between; padding:16px 28px; max-width:1040px; margin:0 auto;}
+  .logo{font-family:var(--mono); font-weight:700; font-size:15px; display:flex; align-items:center; gap:8px; text-decoration:none;}
+  .logo-dot{width:9px;height:9px;border-radius:50%;background:var(--green); box-shadow:0 0 0 3px rgba(46,158,91,.18);}
+  .back{font-family:var(--mono); font-size:13px; color:var(--ink-soft); text-decoration:none; border-bottom:2px solid transparent; padding-bottom:2px;}
+  .back:hover,.back:focus-visible{color:var(--ink); border-color:var(--red);}
+
+  .hero{padding:80px 0 56px;}
+  .eyebrow{font-family:var(--mono); font-size:12.5px; letter-spacing:.08em; color:var(--ink-soft); text-transform:uppercase;
+    display:inline-flex; align-items:center; gap:10px; background:var(--paper); border:1px solid rgba(28,27,31,.15);
+    padding:6px 12px; border-radius:100px; margin-bottom:24px;}
+  .eyebrow::before{content:''; width:6px;height:6px;border-radius:50%;background:var(--yellow);}
+  h1{font-family:var(--display); font-weight:700; font-size:clamp(36px,6.5vw,64px); line-height:1.02; letter-spacing:-.02em;}
+  h1 .accent{color:var(--blue);}
+  .lede{margin-top:22px; font-size:18px; color:#2b2a2d; max-width:640px;}
+  .btn-group{display:flex; gap:12px; flex-wrap:wrap; margin-top:30px;}
+  .btn{font-family:var(--mono); font-size:13.5px; font-weight:700; background:var(--ink); color:var(--paper);
+    padding:14px 22px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:10px;
+    transition:background .15s ease, transform .15s ease;}
+  .btn:hover{background:var(--blue); transform:translateY(-2px);}
+  .btn.btn-outline{background:transparent; color:var(--ink); border:1.5px solid rgba(28,27,31,.3);}
+  .btn.btn-outline:hover{background:var(--ink); color:var(--paper); border-color:var(--ink);}
+
+  .section{padding:48px 0;}
+  .tag{font-family:var(--mono); font-size:12px; letter-spacing:.1em; color:var(--ink-soft); text-transform:uppercase; display:block; margin-bottom:10px;}
+  .tag::before{content:'// '; color:var(--blue);}
+  h2{font-family:var(--display); font-weight:600; font-size:clamp(26px,3.6vw,34px); letter-spacing:-.01em; margin-bottom:20px;}
+  p{font-size:16.5px; color:#2b2a2d; margin-bottom:14px; max-width:680px;}
+
+  .pipeline{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:8px;}
+  .stage{background:var(--chip); color:var(--chip-text); border-radius:10px; padding:18px 16px;}
+  .stage .n{font-family:var(--mono); font-size:11px; color:var(--chip-text-dim); letter-spacing:.08em;}
+  .stage .t{font-family:var(--display); font-weight:600; font-size:16px; margin:6px 0;}
+  .stage .d{font-size:13px; color:#cfccc1; line-height:1.5;}
+
+  .datasheet{background:var(--chip); color:var(--chip-text); border-radius:var(--radius); padding:22px 26px; max-width:680px;}
+  .datasheet-row{display:flex; justify-content:space-between; gap:16px; padding:11px 0; border-bottom:1px solid rgba(242,239,230,.12); font-family:var(--mono); font-size:13.5px;}
+  .datasheet-row:last-child{border-bottom:none;}
+  .datasheet-row .k{color:var(--chip-text-dim);}
+  .datasheet-row .v{text-align:right;}
+
+  .log{list-style:none; max-width:700px;}
+  .log li{background:var(--paper); border:1px solid rgba(28,27,31,.14); border-radius:var(--radius); padding:18px 20px; margin-bottom:12px;}
+  .log .problem{font-family:var(--mono); font-size:12.5px; color:var(--red); font-weight:700; letter-spacing:.02em; margin-bottom:6px;}
+  .log .fix{font-size:15px; color:#2b2a2d;}
+  .log .fix b{font-family:var(--mono); font-size:12.5px; color:var(--green);}
+
+  ul.plain{margin:0 0 14px 20px; max-width:680px;}
+  ul.plain li{font-size:16px; margin-bottom:6px; color:#2b2a2d;}
+
+  footer{padding:40px 28px; text-align:center; font-family:var(--mono); font-size:12px; color:var(--ink-soft); border-top:1px solid rgba(28,27,31,.12); margin-top:40px;}
+
+  @media (max-width:760px){
+    .pipeline{grid-template-columns:1fr 1fr;}
+    .navbar{padding:14px 20px;}
+    .hero{padding:56px 0 40px;}
+    .btn-group{flex-direction:column;}
+    .btn-group .btn{justify-content:center;}
+  }
+  @media (max-width:480px){ .pipeline{grid-template-columns:1fr;} }
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto;} .btn{transition:none;} }
+  </style>
+</head>
+<body class="board">
+  <header>
+    <div class="navbar">
+      <a class="logo" href="../"><span class="logo-dot"></span> P.BARAHI</a>
+      <a class="back" href="../#projects">&larr; All projects</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <span class="eyebrow">Project U3 · LLM / RAG</span>
+      <h1>Datasheet <span class="accent">Q&amp;A</span> Assistant</h1>
+      <p class="lede">Upload an electronics datasheet, ask a question in plain English, and get a short answer with the page number it came from. Built because I got tired of hunting through 16-page PDFs for one number.</p>
+      <div class="btn-group">
+        <a class="btn" href="https://github.com/PrabalBarahi/datasheet-qa-assistant" target="_blank" rel="noopener">View source on GitHub</a>
+        <!-- Add this once the app is deployed, replacing the address:
+        <a class="btn btn-outline" href="https://YOUR-APP.streamlit.app" target="_blank" rel="noopener">Try the live demo</a>
+        -->
+      </div>
+    </section>
+
+    <section class="section">
+      <span class="tag">How it works</span>
+      <h2>Retrieval-augmented generation</h2>
+      <p>The model never sees the whole datasheet blindly. The app finds the pages most likely to hold the answer, and the LLM is told to answer only from them, or say it could not find the answer.</p>
+      <div class="pipeline">
+        <div class="stage"><div class="n">01</div><div class="t">Read</div><div class="d">Extract each PDF page in layout mode so table columns stay lined up.</div></div>
+        <div class="stage"><div class="n">02</div><div class="t">Search</div><div class="d">Combine keyword search with embedding-based semantic search to rank chunks.</div></div>
+        <div class="stage"><div class="n">03</div><div class="t">Ask</div><div class="d">Send the best whole pages plus the question to an LLM with a table-reading prompt.</div></div>
+        <div class="stage"><div class="n">04</div><div class="t">Cite</div><div class="d">Return a short answer with the page number and the pages used.</div></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <span class="tag">Testing</span>
+      <h2>What went wrong, and what I changed</h2>
+      <p>I tested it on the onsemi LM358 datasheet, writing the correct answers myself from the PDF before asking the app. My first version got 8 of 11 questions right. The failures shaped version 2.</p>
+      <ul class="log">
+        <li>
+          <div class="problem">Wrong column</div>
+          <div class="fix">Asked for the LM358's typical input offset voltage (2.0 mV), it answered 5.0 mV, which is the LM258's <em>maximum</em>. Flattened table text had lost the column headers. <b>FIX</b> Read pages in layout mode and mark column breaks, so each value stays under its header.</div>
+        </li>
+        <li>
+          <div class="problem">Missed table rows</div>
+          <div class="fix">Pure semantic search sometimes missed the table that held the answer. <b>FIX</b> Hybrid search: keyword scoring plus embeddings, merged by rank, then send whole pages so a row always arrives with its header.</div>
+        </li>
+        <li>
+          <div class="problem">Invented a number</div>
+          <div class="fix">For open-loop gain it once reported "18 dB", taken from a graph's axis labels. <b>FIX</b> The prompt now forbids using graph axis numbers, and says to answer "not found" when the value isn't in the text.</div>
+        </li>
+      </ul>
+      <p>After these changes, the questions that failed now answer correctly, and questions the datasheet cannot answer (price, slew rate, gain-bandwidth) correctly return "not found". I have not yet run the full automated test set on version 2, so I am not quoting a score.</p>
+    </section>
+
+    <section class="section">
+      <span class="tag">Spec sheet</span>
+      <h2>Stack</h2>
+      <div class="datasheet">
+        <div class="datasheet-row"><span class="k">LANGUAGE</span><span class="v">Python</span></div>
+        <div class="datasheet-row"><span class="k">INTERFACE</span><span class="v">Streamlit</span></div>
+        <div class="datasheet-row"><span class="k">PDF READING</span><span class="v">pypdf</span></div>
+        <div class="datasheet-row"><span class="k">SEARCH</span><span class="v">Keyword (BM25-style) + sentence-transformers</span></div>
+        <div class="datasheet-row"><span class="k">LLM</span><span class="v">Any OpenAI-compatible API (tested with Groq)</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <span class="tag">Limits</span>
+      <h2>What it can't do yet</h2>
+      <ul class="plain">
+        <li>Scanned (image-only) PDFs need OCR, which isn't supported.</li>
+        <li>It reads text and tables, not graphs or schematics.</li>
+        <li>The free hosted demo uses keyword search only; the full version also uses semantic search.</li>
+        <li>Visitors supply their own free API key, so my quota stays private.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    Built on a breadboard, soldered into HTML — <span style="white-space:nowrap;">© <span id="year"></span> Prabal Barahi</span>
+  </footer>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
